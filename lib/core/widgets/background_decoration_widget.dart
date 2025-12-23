@@ -64,12 +64,14 @@ class BackgroundDecorationWidget extends StatelessWidget {
             child: SingleChildScrollView(
               child: Container(
                 width: double.infinity,
+                //height: MediaQuery.of(context).size.height - 200,
                 decoration: BoxDecoration(
                   color: AppColors.primary,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
-                  ),
+                  // borderRadius: BorderRadius.only(
+                  //   topLeft: Radius.circular(30),
+                  //   topRight: Radius.circular(30),
+                  // ),
+                  borderRadius: BorderRadius.circular(30),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(20),

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_app/feature/auth/signup/manager/sign_up_state.dart';
+import 'package:food_app/core/models/user_model.dart';
 
 class SignUpCubit extends Cubit<SignUpState> {
 
@@ -18,6 +19,9 @@ class SignUpCubit extends Cubit<SignUpState> {
   final formKey = GlobalKey<FormState>();
   final FirebaseAuth auth = FirebaseAuth.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  UserModel? currentUser;
+
+  UserModel? get getCurrentUser => currentUser;
 
   void toggleRestaurantManager(bool isManager) {
     final newRole = isManager ? UserRole.ADMIN : UserRole.USER;
@@ -28,21 +32,33 @@ class SignUpCubit extends Cubit<SignUpState> {
     auth
         .createUserWithEmailAndPassword(email: emailController.text, password: passwordController.text)
         .then((value) {
-          firestore.collection('users').doc(value.user?.uid).set({
-            'firstName': firstNameController.text,
-            'lastName': lastNameController.text,
-            'email': emailController.text,
-            'phoneNumber': phoneNumberController.text,
-            'age': int.parse(ageController.text),
-            'role': state.userRole.toString().split('.').last, 
-            'uid': value.user?.uid,
-            'createdAt': DateTime.now().toIso8601String(),
+          final userModel = UserModel(
+          email: emailController.text,
+          firstName: firstNameController.text,
+          lastName: lastNameController.text,
+          phoneNumber: phoneNumberController.text,
+          age: int.tryParse(ageController.text.trim())??0,
+          role: state.userRole,
+          createdAt: DateTime.now(), 
+          password: passwordController.text,
+        );
+          firestore.collection('users').doc(value.user?.uid).set(
+            userModel.toFirestore(),
+            // 'firstName': firstNameController.text,
+            // 'lastName': lastNameController.text,
+            // 'email': emailController.text,
+            // 'phoneNumber': phoneNumberController.text,
+            // 'age': int.parse(ageController.text),
+            // 'role': state.userRole.toString().split('.').last, 
+            // 'uid': value.user?.uid,
+            // 'createdAt': DateTime.now().toIso8601String(),
             //'createdAt': FieldValue.serverTimestamp(),
-          });
+          );
+          currentUser=userModel;
 
-          print('User created: ${value.user?.email}');
-          print('User role: ${state.userRole.name}');
-          emit(state.copyWith(status: SignUpStatus.success));
+          print('User created: ${userModel.email}');
+          print('User role: ${userModel.role.name}');
+          emit(state.copyWith(status: SignUpStatus.success, userRole: userModel.role));
         })
         .catchError((error) {
           print('SignUp error: ${error.toString()}');

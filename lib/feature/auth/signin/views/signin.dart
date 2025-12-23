@@ -12,7 +12,8 @@ import 'package:food_app/feature/auth/signin/manager/sign_in_state.dart';
 import 'package:food_app/feature/auth/signin/widgets/sign_in_form_widget.dart';
 import 'package:food_app/feature/auth/signup/manager/sign_up_cubit.dart';
 import 'package:food_app/feature/auth/signup/views/sign_up.dart';
-import 'package:food_app/feature/home/views/home.dart';
+import 'package:food_app/feature/home/views/admin_home.dart';
+import 'package:food_app/feature/home/views/user_home.dart';
 
 class SignIn extends StatelessWidget {
   const SignIn({super.key});
@@ -35,23 +36,30 @@ class SignIn extends StatelessWidget {
       subtitle: "Welcome back! Please enter your details.",
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
         children: [
           SignInFormWidget(),
           SizedBox(height: 24),
           BlocConsumer<SignInCubit, SignInState>(
             listener: (context, state) {
               if (state.status == SignInStatus.success) {
+                final cubit = context.read<SignInCubit>();
                 CashHelper.putCash(key: CashKeys.isLogin, value: true);
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Home(),
-                    // builder: (context) => BlocProvider(
-                    //   create: (context) => HomeCubit(),
-                    //   child: Home(),
-                    // ),
-                  ),
-                );
+                if (cubit.currentUser != null) {
+                  CashHelper.saveUser(cubit.currentUser!);
+                  
+                  if (cubit.currentUser!.isAdmin) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => AdminHome()),
+                    );
+                  } else {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => UserHome()),
+                    );
+                  }
+                }
               } else if (state.status == SignInStatus.failure) {
                 ScaffoldMessenger.of(
                   context,

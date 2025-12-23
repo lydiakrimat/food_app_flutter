@@ -1,6 +1,6 @@
 class CashKeys {
   static const String isLogin = 'isLogin';
-  static const String userId = 'userId';
-  static const String token = 'token';
+  static const String userData = 'userData';
+  static const String userRole = 'userRole';
   
 }

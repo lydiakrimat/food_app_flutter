@@ -7,7 +7,8 @@ import 'package:food_app/core/helper/observer.dart';
 import 'package:food_app/core/theme/app_theme_google_fonts.dart';
 import 'package:food_app/feature/auth/signin/manager/sign_in_cubit.dart';
 import 'package:food_app/feature/auth/signin/views/signin.dart';
-import 'package:food_app/feature/home/views/home.dart';
+import 'package:food_app/feature/auth/wrapper/auth_wrapper.dart';
+import 'package:food_app/feature/home/views/user_home.dart';
 import 'package:food_app/firebase_options.dart';
 
 Future<void> main() async {
@@ -31,11 +32,7 @@ class MyApp extends StatelessWidget {
       darkTheme: AppThemeGoogle.darkTheme,
       themeMode: ThemeMode.light,
       // home: SignIn(),
-      home: CashHelper.getCash(key: CashKeys.isLogin) == true
-          ? Home(
-              //user:currentUser!,
-            )
-          : BlocProvider(create: (context) => SignInCubit(), child: SignIn()),
+      home: AuthWrapper()
     );
   }
 }

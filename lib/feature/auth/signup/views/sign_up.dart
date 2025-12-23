@@ -12,7 +12,8 @@ import 'package:food_app/feature/auth/signin/views/signin.dart';
 import 'package:food_app/feature/auth/signup/manager/sign_up_cubit.dart';
 import 'package:food_app/feature/auth/signup/manager/sign_up_state.dart';
 import 'package:food_app/feature/auth/signup/widgets/sign_up_form_widget.dart';
-import 'package:food_app/feature/home/views/home.dart';
+import 'package:food_app/feature/home/views/admin_home.dart';
+import 'package:food_app/feature/home/views/user_home.dart';
 
 class SignUp extends StatelessWidget {
   const SignUp({super.key});
@@ -42,16 +43,23 @@ class SignUp extends StatelessWidget {
             listener: (context, state) {
               if (state.status == SignUpStatus.success) {
                 CashHelper.putCash(key: CashKeys.isLogin, value: true);
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Home(),
-                    // builder: (context) => BlocProvider(
-                    //   create: (context) => HomeCubit(),
-                    //   child: Home(),
-                    // ),
-                  ),
-                );
+                final cubit = context.read<SignUpCubit>();
+
+                if (cubit.currentUser != null) {
+                  CashHelper.saveUser(cubit.currentUser!);
+
+                  if (cubit.currentUser!.isAdmin) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => AdminHome()),
+                    );
+                  } else {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => UserHome()),
+                    );
+                  }
+                }
               } else if (state.status == SignUpStatus.failure) {
                 ScaffoldMessenger.of(
                   context,

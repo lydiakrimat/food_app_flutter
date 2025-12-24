@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_app/core/const/cash_keys.dart';
 import 'package:food_app/core/helper/cash.dart';
 import 'package:food_app/feature/auth/signin/manager/sign_in_state.dart';
-import 'package:food_app/feature/auth/signup/manager/sign_up_state.dart';
 import 'package:food_app/core/models/user_model.dart';
 
 class SignInCubit extends Cubit<SignInState> {
